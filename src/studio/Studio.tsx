@@ -14,6 +14,7 @@ import {
   ThemeProvider,
 } from 'ui-kit';
 import { BlockView } from './BlockView';
+import { Brief } from './Brief';
 import { FormProps, Inspector } from './Inspector';
 import { library, libraryGroups, type LibraryItem } from './library';
 import { blankLayout, starterLayouts } from './templates';
@@ -40,6 +41,7 @@ export function Studio() {
   const [layouts, setLayouts] = useState<FormLayout[]>(loadLayouts);
   const [activeId, setActiveId] = useState(layouts[0]?.id ?? '');
   const [design, setDesign] = useState(true);
+  const [screen, setScreen] = useState<'brief' | 'work'>(() => (sessionStorage.getItem('mdm-screen') === 'work' ? 'work' : 'brief'));
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [theme, setTheme] = useState<'dark' | 'light'>('light');
   const [scale, setScale] = useState(1);
@@ -49,6 +51,17 @@ export function Studio() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(layouts));
   }, [layouts]);
+
+  useEffect(() => {
+    sessionStorage.setItem('mdm-screen', screen);
+  }, [screen]);
+
+  const openWork = (layoutId?: string) => {
+    if (layoutId) setActiveId(layoutId);
+    setSelectedId(null);
+    setDesign(true);
+    setScreen('work');
+  };
 
   const layout = layouts.find((item) => item.id === activeId) ?? layouts[0];
   const selected = layout?.blocks.find((block) => block.id === selectedId) ?? null;
@@ -66,7 +79,7 @@ export function Studio() {
     const observer = new ResizeObserver(measure);
     observer.observe(node);
     return () => observer.disconnect();
-  }, [layout]);
+  }, [layout, screen]);
 
   const patchLayout = (recipe: (current: FormLayout) => FormLayout) => {
     if (!layout) return;
@@ -164,34 +177,63 @@ export function Studio() {
         <AppBar>
           <AppBarLogo icon={DashboardsIcon} alt="MDM" />
           <AppBarContainer>
-            {layouts.map((item) => (
+            <AppBarItem
+              href="#brief"
+              variant={screen === 'brief' ? 'primary' : 'secondary'}
+              className={screen === 'brief' ? 'nav-current' : undefined}
+              onClick={(event) => {
+                event.preventDefault();
+                setScreen('brief');
+              }}
+            >
+              О продукте
+            </AppBarItem>
+            {screen === 'work' ? (
+              layouts.map((item) => (
+                <AppBarItem
+                  key={item.id}
+                  href={`#${item.id}`}
+                  variant={item.id === layout.id ? 'primary' : 'secondary'}
+                  className={item.id === layout.id ? 'nav-current' : undefined}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setActiveId(item.id);
+                    setSelectedId(null);
+                  }}
+                >
+                  {item.name}
+                </AppBarItem>
+              ))
+            ) : (
               <AppBarItem
-                key={item.id}
-                href={`#${item.id}`}
-                variant={item.id === layout.id ? 'primary' : 'secondary'}
-                className={item.id === layout.id ? 'nav-current' : undefined}
+                href="#work"
+                variant="secondary"
                 onClick={(event) => {
                   event.preventDefault();
-                  setActiveId(item.id);
-                  setSelectedId(null);
+                  openWork();
                 }}
               >
-                {item.name}
+                Конструктор
               </AppBarItem>
-            ))}
+            )}
           </AppBarContainer>
           <div className="shell-tools">
-            <Button size={BUTTON_SIZE.SMALL} variant={design ? BUTTON_VARIANT.CONTAINED : BUTTON_VARIANT.OUTLINED} onClick={() => setDesign(true)}>
-              Редактирование
-            </Button>
-            <Button size={BUTTON_SIZE.SMALL} variant={design ? BUTTON_VARIANT.OUTLINED : BUTTON_VARIANT.CONTAINED} onClick={() => { setDesign(false); setSelectedId(null); }}>
-              Просмотр
-            </Button>
+            {screen === 'work' ? (
+              <>
+                <Button size={BUTTON_SIZE.SMALL} variant={design ? BUTTON_VARIANT.CONTAINED : BUTTON_VARIANT.OUTLINED} onClick={() => setDesign(true)}>
+                  Редактирование
+                </Button>
+                <Button size={BUTTON_SIZE.SMALL} variant={design ? BUTTON_VARIANT.OUTLINED : BUTTON_VARIANT.CONTAINED} onClick={() => { setDesign(false); setSelectedId(null); }}>
+                  Просмотр
+                </Button>
+              </>
+            ) : null}
             <Button size={BUTTON_SIZE.SMALL} variant={BUTTON_VARIANT.TEXT} onClick={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}>
               {theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}
             </Button>
           </div>
         </AppBar>
+        {screen === 'brief' ? <Brief onOpen={openWork} /> : (
         <div className={design ? 'studio' : 'studio is-preview'}>
           {design ? (
             <aside className="studio-side">
@@ -267,6 +309,7 @@ export function Studio() {
             </aside>
           ) : null}
         </div>
+        )}
       </div>
     </ThemeProvider>
   );
