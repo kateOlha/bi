@@ -777,6 +777,61 @@ select.field-control {
   background: var(--ui-kit-colors-background-secondary);
 }
 
+.brief-note {
+  margin: -4px 0 14px;
+  max-width: 68ch;
+  color: var(--ui-kit-colors-text-secondary);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.brief-flow {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.brief-flow li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--ui-kit-colors-text-primary) 12%, transparent);
+  border-radius: 12px;
+  background: var(--ui-kit-colors-background-secondary);
+}
+
+.brief-flow span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 99px;
+  background: #1f4e9e;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.brief-flow h3 {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.brief-flow p {
+  margin: 0;
+  color: var(--ui-kit-colors-text-primary);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .brief-examples {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -830,6 +885,7 @@ select.field-control {
 
   .brief-why,
   .brief-grid,
+  .brief-flow,
   .brief-examples {
     grid-template-columns: 1fr;
   }

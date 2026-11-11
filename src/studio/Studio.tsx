@@ -8,7 +8,6 @@ import {
   Button,
   BUTTON_SIZE,
   BUTTON_VARIANT,
-  DashboardsIcon,
   DARK_THEME,
   LIGHT_THEME,
   ThemeProvider,
@@ -175,7 +174,7 @@ export function Studio() {
     <ThemeProvider theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}>
       <div className="shell">
         <AppBar>
-          <AppBarLogo icon={DashboardsIcon} alt="MDM" />
+          <AppBarLogo src={`${import.meta.env.BASE_URL}mark.svg`} alt="Конструктор форм" />
           <AppBarContainer>
             <AppBarItem
               href="#brief"
@@ -242,7 +241,7 @@ export function Studio() {
                   <p className="product-kicker">MDM</p>
                   <p className="product-title">Конструктор форм</p>
                 </div>
-                <p className="panel-copy">Блок из библиотеки встаёт под макетом. В просмотре форма совпадает с настройкой.</p>
+                <p className="panel-copy">Блок появляется на карточке. В просмотре сотрудник видит ту же форму.</p>
                 {libraryGroups.map((group) => (
                   <div key={group} className="library-group">
                     <p className="panel-kicker">{group}</p>
